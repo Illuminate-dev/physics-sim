@@ -1,0 +1,14 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "physics-sim",
+      "dependencies": {
+        "three": "^0.174.0",
+      },
+    },
+  },
+  "packages": {
+    "three": ["three@0.174.0", "", {}, "sha512-p+WG3W6Ov74alh3geCMkGK9NWuT62ee21cV3jEnun201zodVF4tCE5aZa2U122/mkLRmhJJUQmLLW1BH00uQJQ=="],
+  }
+}

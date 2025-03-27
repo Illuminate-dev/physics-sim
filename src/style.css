@@ -1,0 +1,21 @@
+body {
+  margin: 0;
+  display: flex;
+}
+
+#sidebar {
+  width: min(10vw, 200px);
+  flex: 0 0 auto;
+  padding-top: 1em;
+  background-color: #4e4e4e;
+}
+
+#sidebar button {
+  display: block;
+  margin: 5px auto;
+  width: 75%;
+  height: 2em;
+  border-radius: 5px;
+  font-size: 1em;
+  background-color: #dcdcdc;
+}
