@@ -1,7 +1,11 @@
 import "./style.css";
 
+import { Circuit, Component } from "./Circuit.js";
+
 import * as THREE from "three";
 import { MapControls } from "three/examples/jsm/Addons.js";
+
+// setup
 
 let sceneWidth = Math.max(0.9 * window.innerWidth, window.innerWidth - 200);
 let sceneHeight = window.innerHeight;
@@ -25,31 +29,35 @@ camera.position.z = 5;
 const controls = new MapControls(camera, renderer.domElement);
 controls.screenSpacePanning = true;
 controls.mouseButtons.RIGHT = null;
+controls.maxDistance = 20;
 
 
 // create objects
 
-const circle = new THREE.Shape();
-circle.absarc(0, 0, 2);
-
-const geometry = new THREE.ShapeGeometry(circle, 100);
-
-const material = new THREE.MeshBasicMaterial({
-  color: 0x00ff00,
-  side: THREE.DoubleSide,
-  depthWrite: false
-});
-
-const mesh = new THREE.Mesh(geometry, material);
-
-scene.add(mesh);
+const testCircuit = new Circuit();
+const node1 = testCircuit.addNode(0, 2);
+const node2 = testCircuit.addNode(2, 2);
+const node3 = testCircuit.addNode(2, 0);
+const node4 = testCircuit.addNode(0, 0);
+node1.connect(node2, new Component());
+node2.connect(node3, new Component());
+node3.connect(node4);
+node4.connect(node1);
 
 
+{
+  const grid = new THREE.GridHelper(100, 100, 0x888888);
+  grid.rotation.x = Math.PI / 2;
+
+  scene.add(grid);
+
+  testCircuit.addToScene(scene);
+
+}
 
 
+// rendering
 function animate() {
-
-
   renderer.render(scene, camera);
 }
 
@@ -63,12 +71,18 @@ function setWindowSize() {
   camera.updateProjectionMatrix();
 }
 
-// Add button controlls pausing and playing
+// // Add button controlls pausing and playing
+//
+// document.getElementById("stop").addEventListener("click", () => {
+//   paused = true;
+// });
+//
+// document.getElementById("start").addEventListener("click", () => {
+//   paused = false;
+// });
 
-document.getElementById("stop").addEventListener("click", () => {
-  paused = true;
-});
-
-document.getElementById("start").addEventListener("click", () => {
-  paused = false;
+// reset camera
+document.getElementById("reset").addEventListener("click", () => {
+  camera.position.set(0, 0, 5);
+  controls.reset();
 });
