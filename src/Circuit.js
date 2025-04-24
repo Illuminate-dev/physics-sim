@@ -21,14 +21,15 @@ class Node {
 
 class Component {
   constructor() {
-
   }
 
   addToScene(scene, nodeIn, nodeOut) {
     // draw label in html
 
-    let x = (nodeIn.x + nodeOut.x) / 2;
-    let y = (nodeIn.y + nodeOut.y) / 2 + 0.05;
+    const offset = 0.1;
+    const length = Math.sqrt((nodeIn.x - nodeOut.x) ** 2 + (nodeIn.y - nodeOut.y) ** 2);
+    let x = (nodeIn.x + nodeOut.x) / 2 - offset * (nodeOut.y - nodeIn.y) / length;
+    let y = (nodeIn.y + nodeOut.y) / 2 + offset * (nodeOut.x - nodeIn.x) / length;
 
     // const coords = new THREE.Vector3(x, y, 0).project(camera);
 
@@ -45,13 +46,14 @@ class Component {
 
     const labelDiv = document.createElement("div");
     labelDiv.className = "label";
-    labelDiv.textContent = "component";
-    labelDiv.style.background = 'transparent';
+    labelDiv.textContent = "C";
 
     const labelObject = new CSS2DObject(labelDiv);
     labelObject.position.set(
       x, y, 0
     );
+
+    console.log(labelObject.position);
     scene.add(labelObject);
 
   }
@@ -108,7 +110,7 @@ class Circuit {
           node.x, node.y, 0,
           nodeOut.x, nodeOut.y, 0
         ]);
-        
+
         let line = new Line2(lineGeometry, lineMaterial);
         scene.add(line);
 

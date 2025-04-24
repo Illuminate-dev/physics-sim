@@ -4,6 +4,7 @@ import { Circuit, Component } from "./Circuit.js";
 
 import * as THREE from "three";
 import { MapControls } from "three/examples/jsm/Addons.js";
+import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 
 // setup
 
@@ -24,10 +25,12 @@ renderer.setAnimationLoop(animate);
 document.body.appendChild(renderer.domElement);
 
 // set up label renderer
-const labelRenderer = new THREE.CSS2DRenderer();
+const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(sceneWidth, sceneHeight);
 labelRenderer.domElement.style.position = "absolute";
 labelRenderer.domElement.style.top = "0px";
+labelRenderer.domElement.style.left = (window.innerWidth - sceneWidth) + "px";
+labelRenderer.domElement.style.pointerEvents = "none";
 document.body.appendChild(labelRenderer.domElement);
 
 camera.position.z = 5;
@@ -57,14 +60,14 @@ node4.connect(node1);
 
   scene.add(grid);
 
-  // testCircuit.addToScene(scene);
+  testCircuit.addToScene(scene);
 }
 
 
 // rendering
 function animate() {
   renderer.render(scene, camera);
-  // labelRenderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
 }
 
 window.addEventListener("resize", setWindowSize);
@@ -73,6 +76,10 @@ function setWindowSize() {
   sceneWidth = Math.max(0.9 * window.innerWidth, window.innerWidth - 200);
   sceneHeight = window.innerHeight;
   renderer.setSize(sceneWidth, sceneHeight);
+
+  labelRenderer.setSize(sceneWidth, sceneHeight);
+  labelRenderer.domElement.style.left = (window.innerWidth - sceneWidth) + "px";
+
   camera.aspect = sceneWidth / sceneHeight;
   camera.updateProjectionMatrix();
 }
