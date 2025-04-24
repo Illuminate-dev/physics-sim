@@ -1,8 +1,9 @@
 import * as THREE from "three";
+import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { newLine } from "./util";
 import { Line2 } from "three/addons/lines/Line2.js";
 import { LineGeometry } from "three/addons/lines/LineGeometry.js";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
-import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 const top = 0;
 const left = Math.min(window.innerWidth * 0.1, 200);
@@ -20,16 +21,22 @@ class Node {
 }
 
 class Component {
+  static WIDTH = 0.2;
+  static LABEL_OFFSET = 0.25;
+
   constructor() {
   }
 
-  addToScene(scene, nodeIn, nodeOut) {
+  getText() {
+    return "X";
+  }
+
+  addToScene(scene, start, end) {
     // draw label in html
 
-    const offset = 0.1;
-    const length = Math.sqrt((nodeIn.x - nodeOut.x) ** 2 + (nodeIn.y - nodeOut.y) ** 2);
-    let x = (nodeIn.x + nodeOut.x) / 2 - offset * (nodeOut.y - nodeIn.y) / length;
-    let y = (nodeIn.y + nodeOut.y) / 2 + offset * (nodeOut.x - nodeIn.x) / length;
+    const length = Math.sqrt((start.x - end.x) ** 2 + (start.y - end.y) ** 2);
+    let x = (start.x + end.x) / 2 - Component.LABEL_OFFSET * (end.y - start.y) / length;
+    let y = (start.y + end.y) / 2 + Component.LABEL_OFFSET * (end.x - start.x) / length;
 
     // const coords = new THREE.Vector3(x, y, 0).project(camera);
 
@@ -46,19 +53,70 @@ class Component {
 
     const labelDiv = document.createElement("div");
     labelDiv.className = "label";
-    labelDiv.textContent = "C";
+    labelDiv.textContent = this.getText();
 
     const labelObject = new CSS2DObject(labelDiv);
     labelObject.position.set(
       x, y, 0
     );
 
-    console.log(labelObject.position);
     scene.add(labelObject);
 
   }
 }
 
+// capacitors
+class Capacitor extends Component {
+  static PLATE_HEIGHT = 0.2;
+
+  constructor(capacitance) {
+    super();
+    this.c = capacitance;
+  }
+
+  getText() {
+    return "C=" + this.c + " C";
+  }
+
+  addToScene(scene, start, end) {
+    super.addToScene(scene, start, end);
+
+    // draw the capacitor
+    // it's just two lines
+
+    const capObj = capPlates.clone(true);
+
+    capObj.position.x = (start.x + end.x) / 2;
+    capObj.position.y = (start.y + end.y) / 2;
+
+    // rotate the capacitor to the line
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const angle = Math.atan2(dy, dx);
+    capObj.rotation.z = angle;
+
+    // add the capacitor to the scene
+    scene.add(capObj);
+  }
+
+}
+
+// create the capacitor plates to clone and rotate later
+const capGeo = new LineGeometry();
+capGeo.setPositions([0, -Capacitor.PLATE_HEIGHT / 2, 0, 0, Capacitor.PLATE_HEIGHT / 2, 0])
+
+const capMat = new LineMaterial({ color: 0xffffff, linewidth: 2, alphaToCoverage: true });
+const plate = new Line2(capGeo, capMat);
+plate.computeLineDistances();
+plate.scale.set(1, 1, 1);
+
+const capPlates = new THREE.Group();
+const plate2 = plate.clone();
+capPlates.add(plate, plate2);
+plate.position.x = -Component.WIDTH / 2;
+plate2.position.x = Component.WIDTH / 2;
+
+// create node circle
 const circle = new THREE.Shape();
 const radius = 0.05;
 circle.absarc(0, 0, radius);
@@ -99,25 +157,52 @@ class Circuit {
       // draw connections
       for (let j = 0; j < node.forwardConnections.length; j++) {
         let { nodeOut, components } = node.forwardConnections[j];
-        let lineMaterial = new LineMaterial({
-          color: 'white',
-          linewidth: 2,
-          alphaToCoverage: true,
-        });
 
-        let lineGeometry = new LineGeometry();
-        lineGeometry.setPositions([
-          node.x, node.y, 0,
-          nodeOut.x, nodeOut.y, 0
-        ]);
+        // draw line in segments, so that we can add the components too
+        // ideally like this
+        // |—gap—|—comp1—|—gap—|—comp2—|—gap—|
 
-        let line = new Line2(lineGeometry, lineMaterial);
-        scene.add(line);
+        // calculate the offset
+        const dx = nodeOut.x - node.x;
+        const dy = nodeOut.y - node.y;
+        const length = Math.sqrt(dx ** 2 + dy ** 2);
+
+        const gap = (length - components.length * Component.WIDTH) / (components.length + 1);
+
+        // unit direction from node to offset
+        const ux = dx / length;
+        const uy = dy / length;
+
+        // point t units along the line
+        function pointAt(t) {
+          return {
+            x: node.x + ux * t,
+            y: node.y + uy * t
+          };
+        }
+
+        let t = 0;
+
+        const a = pointAt(t);
+        const b = pointAt(t + gap);
+        scene.add(newLine(a.x, a.y, b.x, b.y));
+        t += gap
 
         // draw components
         for (let k = 0; k < components.length; k++) {
-          let component = components[k];
-          component.addToScene(scene, node, nodeOut);
+
+          const start = pointAt(t);
+          const end = pointAt(t + Component.WIDTH);
+
+          // draw the component
+          components[k].addToScene(scene, start, end);
+
+          t += Component.WIDTH;
+
+          // draw the next line segment
+          const nextPoint = pointAt(t + gap);
+          scene.add(newLine(end.x, end.y, nextPoint.x, nextPoint.y));
+          t += gap;
         }
       }
     }
@@ -125,4 +210,4 @@ class Circuit {
 }
 
 
-export { Component, Circuit }
+export { Component, Circuit, Capacitor }
