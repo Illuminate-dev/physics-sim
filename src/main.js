@@ -23,6 +23,13 @@ renderer.setSize(sceneWidth, sceneHeight);
 renderer.setAnimationLoop(animate);
 document.body.appendChild(renderer.domElement);
 
+// set up label renderer
+const labelRenderer = new THREE.CSS2DRenderer();
+labelRenderer.setSize(sceneWidth, sceneHeight);
+labelRenderer.domElement.style.position = "absolute";
+labelRenderer.domElement.style.top = "0px";
+document.body.appendChild(labelRenderer.domElement);
+
 camera.position.z = 5;
 
 // map-like controls
@@ -44,21 +51,20 @@ node2.connect(node3, new Component());
 node3.connect(node4);
 node4.connect(node1);
 
-
 {
   const grid = new THREE.GridHelper(100, 100, 0x888888);
   grid.rotation.x = Math.PI / 2;
 
   scene.add(grid);
 
-  testCircuit.addToScene(scene);
-
+  // testCircuit.addToScene(scene);
 }
 
 
 // rendering
 function animate() {
   renderer.render(scene, camera);
+  // labelRenderer.render(scene, camera);
 }
 
 window.addEventListener("resize", setWindowSize);

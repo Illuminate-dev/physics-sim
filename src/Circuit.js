@@ -1,4 +1,11 @@
 import * as THREE from "three";
+import { Line2 } from "three/addons/lines/Line2.js";
+import { LineGeometry } from "three/addons/lines/LineGeometry.js";
+import { LineMaterial } from "three/addons/lines/LineMaterial.js";
+import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+const top = 0;
+const left = Math.min(window.innerWidth * 0.1, 200);
 
 class Node {
   constructor(x, y) {
@@ -14,6 +21,38 @@ class Node {
 
 class Component {
   constructor() {
+
+  }
+
+  addToScene(scene, nodeIn, nodeOut) {
+    // draw label in html
+
+    let x = (nodeIn.x + nodeOut.x) / 2;
+    let y = (nodeIn.y + nodeOut.y) / 2 + 0.05;
+
+    // const coords = new THREE.Vector3(x, y, 0).project(camera);
+
+    // const label = document.createElement("div");
+    // label.style.position = 'absolute';
+    // label.style.zIndex = 1;
+    // label.style.width = 100;
+    // label.style.height = 100;
+    // label.innerHTML = "Component";
+    // label.style.color = 'white';
+    // label.style.top = (top + coords.y) + 'px';
+    // label.style.left = (left + x) + 'px';
+    // document.body.appendChild(label);
+
+    const labelDiv = document.createElement("div");
+    labelDiv.className = "label";
+    labelDiv.textContent = "component";
+    labelDiv.style.background = 'transparent';
+
+    const labelObject = new CSS2DObject(labelDiv);
+    labelObject.position.set(
+      x, y, 0
+    );
+    scene.add(labelObject);
 
   }
 }
@@ -58,7 +97,26 @@ class Circuit {
       // draw connections
       for (let j = 0; j < node.forwardConnections.length; j++) {
         let { nodeOut, components } = node.forwardConnections[j];
+        let lineMaterial = new LineMaterial({
+          color: 'white',
+          linewidth: 2,
+          alphaToCoverage: true,
+        });
 
+        let lineGeometry = new LineGeometry();
+        lineGeometry.setPositions([
+          node.x, node.y, 0,
+          nodeOut.x, nodeOut.y, 0
+        ]);
+        
+        let line = new Line2(lineGeometry, lineMaterial);
+        scene.add(line);
+
+        // draw components
+        for (let k = 0; k < components.length; k++) {
+          let component = components[k];
+          component.addToScene(scene, node, nodeOut);
+        }
       }
     }
   }
