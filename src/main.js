@@ -1,6 +1,6 @@
 import "./style.css";
 
-import { Capacitor, Circuit, Component } from "./Circuit.js";
+import { Battery, Capacitor, Circuit, Component, Resistor } from "./Circuit.js";
 
 import * as THREE from "three";
 import { MapControls } from "three/examples/jsm/Addons.js";
@@ -50,9 +50,9 @@ const node2 = testCircuit.addNode(2, 2);
 const node3 = testCircuit.addNode(2, 0);
 const node4 = testCircuit.addNode(0, 0);
 node1.connect(node2, new Capacitor(20));
-node2.connect(node3, new Component());
+node2.connect(node3, new Resistor(10));
 node3.connect(node4);
-node4.connect(node1);
+node4.connect(node1, new Battery(5));
 
 {
   const grid = new THREE.GridHelper(100, 100, 0x888888);

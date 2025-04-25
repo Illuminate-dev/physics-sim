@@ -5,9 +5,6 @@ import { Line2 } from "three/addons/lines/Line2.js";
 import { LineGeometry } from "three/addons/lines/LineGeometry.js";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 
-const top = 0;
-const left = Math.min(window.innerWidth * 0.1, 200);
-
 class Node {
   constructor(x, y) {
     this.x = x;
@@ -20,9 +17,12 @@ class Node {
   }
 }
 
+const compMat = new LineMaterial({ color: 0xffffff, linewidth: 2, alphaToCoverage: true });
+
 class Component {
   static WIDTH = 0.2;
-  static LABEL_OFFSET = 0.25;
+  static MAX_HEIGHT = 0.13;
+  static LABEL_OFFSET = 0.4;
 
   constructor() {
   }
@@ -36,20 +36,7 @@ class Component {
 
     const length = Math.sqrt((start.x - end.x) ** 2 + (start.y - end.y) ** 2);
     let x = (start.x + end.x) / 2 - Component.LABEL_OFFSET * (end.y - start.y) / length;
-    let y = (start.y + end.y) / 2 + Component.LABEL_OFFSET * (end.x - start.x) / length;
-
-    // const coords = new THREE.Vector3(x, y, 0).project(camera);
-
-    // const label = document.createElement("div");
-    // label.style.position = 'absolute';
-    // label.style.zIndex = 1;
-    // label.style.width = 100;
-    // label.style.height = 100;
-    // label.innerHTML = "Component";
-    // label.style.color = 'white';
-    // label.style.top = (top + coords.y) + 'px';
-    // label.style.left = (left + x) + 'px';
-    // document.body.appendChild(label);
+    let y = (start.y + end.y) / 2 + 0.5 * Component.LABEL_OFFSET * (end.x - start.x) / length;
 
     const labelDiv = document.createElement("div");
     labelDiv.className = "label";
@@ -65,10 +52,69 @@ class Component {
   }
 }
 
-// capacitors
-class Capacitor extends Component {
-  static PLATE_HEIGHT = 0.2;
+// resistors
 
+// three Vs but kinda offset
+const resGeo = new LineGeometry();
+resGeo.setPositions([-Component.WIDTH / 2, 0, 0, -Component.WIDTH * (5 / 12), Component.MAX_HEIGHT / 2, 0,
+-Component.WIDTH * (3 / 12), -Component.MAX_HEIGHT / 2, 0, -Component.WIDTH * (1 / 12), Component.MAX_HEIGHT / 2, 0,
+Component.WIDTH * (1 / 12), -Component.MAX_HEIGHT / 2, 0, Component.WIDTH * (3 / 12), Component.MAX_HEIGHT / 2, 0,
+Component.WIDTH * (5 / 12), -Component.MAX_HEIGHT / 2, 0, Component.WIDTH / 2, 0, 0]);
+
+const resLine = new Line2(resGeo, compMat);
+resLine.computeLineDistances();
+resLine.scale.set(1, 1, 1);
+
+class Resistor extends Component {
+  constructor(resistance) {
+    super();
+    this.r = resistance;
+  }
+
+  getText() {
+    return "R=" + this.r + " Ω";
+  }
+
+  addToScene(scene, start, end) {
+    super.addToScene(scene, start, end);
+
+    // draw the resistor
+    // it's just a zigzag line
+
+    const resObj = resLine.clone(true);
+
+    resObj.position.x = (start.x + end.x) / 2;
+    resObj.position.y = (start.y + end.y) / 2;
+
+    // rotate the resistor to the line
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const angle = Math.atan2(dy, dx);
+    resObj.rotation.z = angle;
+
+    // add the resistor to the scene
+    scene.add(resObj);
+  }
+}
+
+
+// capacitors
+
+// create the capacitor plates to clone and rotate later
+const capGeo = new LineGeometry();
+capGeo.setPositions([0, -Component.MAX_HEIGHT / 2, 0, 0, Component.MAX_HEIGHT / 2, 0])
+
+const plate = new Line2(capGeo, compMat);
+plate.computeLineDistances();
+plate.scale.set(1, 1, 1);
+
+const capPlates = new THREE.Group();
+const plate2 = plate.clone();
+capPlates.add(plate, plate2);
+plate.position.x = -Component.WIDTH / 2;
+plate2.position.x = Component.WIDTH / 2;
+
+class Capacitor extends Component {
   constructor(capacitance) {
     super();
     this.c = capacitance;
@@ -101,24 +147,67 @@ class Capacitor extends Component {
 
 }
 
-// create the capacitor plates to clone and rotate later
-const capGeo = new LineGeometry();
-capGeo.setPositions([0, -Capacitor.PLATE_HEIGHT / 2, 0, 0, Capacitor.PLATE_HEIGHT / 2, 0])
+// resistors
 
-const capMat = new LineMaterial({ color: 0xffffff, linewidth: 2, alphaToCoverage: true });
-const plate = new Line2(capGeo, capMat);
-plate.computeLineDistances();
-plate.scale.set(1, 1, 1);
+// three Vs but kinda offset
 
-const capPlates = new THREE.Group();
-const plate2 = plate.clone();
-capPlates.add(plate, plate2);
-plate.position.x = -Component.WIDTH / 2;
-plate2.position.x = Component.WIDTH / 2;
+const batGeo = new LineGeometry();
+batGeo.setPositions([0, -Component.MAX_HEIGHT / 2, 0, 0, Component.MAX_HEIGHT / 2, 0])
+
+const batLine = new Line2(capGeo, compMat);
+batLine.computeLineDistances();
+batLine.scale.set(1, 1, 1);
+
+const batLines = new THREE.Group();
+const batLine2 = batLine.clone();
+const batLine3 = batLine.clone();
+const batLine4 = batLine.clone();
+batLines.add(batLine, batLine2, batLine3, batLine4);
+batLine.position.x = -Component.WIDTH / 2;
+batLine2.position.x = -Component.WIDTH * (1 / 6);
+batLine3.position.x = Component.WIDTH * (1 / 6);
+batLine4.position.x = Component.WIDTH / 2;
+
+batLine2.scale.set(1, 0.5, 1);
+batLine4.scale.set(1, 0.5, 1);
+
+
+class Battery extends Component {
+  constructor(voltage) {
+    super();
+    this.v = voltage;
+  }
+
+  getText() {
+    return "V=" + this.v + " V";
+  }
+
+  addToScene(scene, start, end) {
+    super.addToScene(scene, start, end);
+
+    // draw the resistor
+    // it's just a zigzag line
+
+    const batObj = batLines.clone(true);
+
+    batObj.position.x = (start.x + end.x) / 2;
+    batObj.position.y = (start.y + end.y) / 2;
+
+    // rotate the resistor to the line
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const angle = Math.atan2(dy, dx);
+    batObj.rotation.z = angle;
+
+    // add the resistor to the scene
+    scene.add(batObj);
+  }
+}
+
 
 // create node circle
 const circle = new THREE.Shape();
-const radius = 0.05;
+const radius = 0.03;
 circle.absarc(0, 0, radius);
 
 const segments = 100;
@@ -131,6 +220,8 @@ const circleMaterial = new THREE.MeshBasicMaterial({
 });
 
 const circleMesh = new THREE.Mesh(circleGeometry, circleMaterial);
+
+
 
 
 
@@ -210,4 +301,4 @@ class Circuit {
 }
 
 
-export { Component, Circuit, Capacitor }
+export { Component, Circuit, Capacitor, Resistor, Battery }
