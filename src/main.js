@@ -68,6 +68,7 @@ node4.connect(node1, new Battery(5));
 function animate() {
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
+  testCircuit.animate(controls);  
 }
 
 window.addEventListener("resize", setWindowSize);

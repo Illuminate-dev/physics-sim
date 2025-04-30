@@ -25,6 +25,7 @@ class Component {
   static LABEL_OFFSET = 0.4;
 
   constructor() {
+    this.labelObject = null;
   }
 
   getText() {
@@ -49,6 +50,15 @@ class Component {
 
     scene.add(labelObject);
 
+    this.labelObject = labelObject;
+  }
+
+  animate(controls) {
+    if (this.labelObject) {
+      // scale the label object based on zoom
+      const scale = 5 / (controls.getDistance());
+      this.labelObject.element.style.transform += `scale(${scale})`;
+    }
   }
 }
 
@@ -294,6 +304,18 @@ class Circuit {
           const nextPoint = pointAt(t + gap);
           scene.add(newLine(end.x, end.y, nextPoint.x, nextPoint.y));
           t += gap;
+        }
+      }
+    }
+  }
+
+  animate(controls) {
+    for (let i = 0; i < this.nodes.length; i++) {
+      let node = this.nodes[i];
+      for (let j = 0; j < node.forwardConnections.length; j++) {
+        let { components } = node.forwardConnections[j];
+        for (let k = 0; k < components.length; k++) {
+          components[k].animate(controls);
         }
       }
     }
