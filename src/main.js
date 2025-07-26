@@ -12,6 +12,7 @@ let sceneWidth = Math.max(0.9 * window.innerWidth, window.innerWidth - 200);
 let sceneHeight = window.innerHeight;
 
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
 const camera = new THREE.PerspectiveCamera(
   75,
   sceneWidth / sceneHeight,
@@ -55,7 +56,7 @@ node3.connect(node4);
 node4.connect(node1, new Battery(5));
 
 {
-  const grid = new THREE.GridHelper(100, 100, 0x888888);
+  const grid = new THREE.GridHelper(100, 100, 0x16213e, 0x0f3460);
   grid.rotation.x = Math.PI / 2;
 
   scene.add(grid);
