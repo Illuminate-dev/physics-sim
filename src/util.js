@@ -3,10 +3,10 @@ import { Line2 } from "three/addons/lines/Line2.js";
 import { LineGeometry } from "three/addons/lines/LineGeometry.js";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 
-function newLine(x1, y1, x2, y2, color = 0x3498db) {
+function newLine(x1, y1, x2, y2, color = 0x888888) {
   let lineMaterial = new LineMaterial({
     color,
-    linewidth: 3,
+    linewidth: 2,
     alphaToCoverage: true,
   });
 

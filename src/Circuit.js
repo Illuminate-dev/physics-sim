@@ -17,7 +17,7 @@ class Node {
   }
 }
 
-const compMat = new LineMaterial({ color: 0x3498db, linewidth: 3, alphaToCoverage: true });
+const compMat = new LineMaterial({ color: 0x888888, linewidth: 2, alphaToCoverage: true });
 
 class Component {
   static WIDTH = 0.2;
@@ -224,7 +224,7 @@ const segments = 100;
 const circleGeometry = new THREE.ShapeGeometry(circle, segments / 2);
 
 const circleMaterial = new THREE.MeshBasicMaterial({
-  color: 0xe74c3c,
+  color: 0xaaaaaa,
   side: THREE.DoubleSide,
   depthWrite: false
 });
