@@ -34,6 +34,8 @@ This is a 3D physics circuit simulator built with Three.js and Vite. The applica
 
 ### Core Structure
 
+In **src/**:
+
 - **main.js**: Application entry point, sets up Three.js scene, camera, renderer, and controls. Creates the test circuit and handles UI interactions.
 - **Circuit.js**: Contains all circuit-related classes:
   - `Circuit`: Main circuit container that manages nodes and rendering
