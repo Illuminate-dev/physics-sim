@@ -58,6 +58,7 @@ node4.connect(node1, new Battery(5));
 {
   const grid = new THREE.GridHelper(100, 100, 0x2d3640, 0x242a32);
   grid.rotation.x = Math.PI / 2;
+  grid.renderOrder = -1; // Render grid before other objects
 
   scene.add(grid);
 

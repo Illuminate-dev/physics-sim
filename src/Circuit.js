@@ -95,6 +95,7 @@ class Resistor extends Component {
 
     resObj.position.x = (start.x + end.x) / 2;
     resObj.position.y = (start.y + end.y) / 2;
+    resObj.renderOrder = 1;
 
     // rotate the resistor to the line
     const dx = end.x - start.x;
@@ -144,6 +145,7 @@ class Capacitor extends Component {
 
     capObj.position.x = (start.x + end.x) / 2;
     capObj.position.y = (start.y + end.y) / 2;
+    capObj.renderOrder = 1;
 
     // rotate the capacitor to the line
     const dx = end.x - start.x;
@@ -202,6 +204,7 @@ class Battery extends Component {
 
     batObj.position.x = (start.x + end.x) / 2;
     batObj.position.y = (start.y + end.y) / 2;
+    batObj.renderOrder = 1;
 
     // rotate the resistor to the line
     const dx = end.x - start.x;
@@ -253,6 +256,7 @@ class Circuit {
       let newMesh = circleMesh.clone();
       newMesh.position.x = node.x;
       newMesh.position.y = node.y;
+      newMesh.renderOrder = 1; // Render nodes after grid
       scene.add(newMesh)
 
       // draw connections

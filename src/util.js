@@ -16,7 +16,9 @@ function newLine(x1, y1, x2, y2, color = 0xffffff) {
     x2, y2, 0
   ]);
 
-  return new Line2(lineGeometry, lineMaterial);
+  const line = new Line2(lineGeometry, lineMaterial);
+  line.renderOrder = 1; // Render lines after grid
+  return line;
 }
 
 export { newLine }
