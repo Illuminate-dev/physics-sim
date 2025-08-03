@@ -132,7 +132,7 @@ class Capacitor extends Component {
   }
 
   getText() {
-    return "C=" + this.c + " C";
+    return "C=" + this.c + " F";
   }
 
   addToScene(scene, start, end) {
