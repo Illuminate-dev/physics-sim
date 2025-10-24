@@ -3,14 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Physics Sim</title>
+    <title>Physics & Chemistry Simulator</title>
+    <link rel="stylesheet" href="/src/home.css">
   </head>
   <body>
-    <div id="sidebar">
-      <button id="start">Start</button>
-      <button id="stop">Stop</button>
-      <button id="reset">Reset Camera</button>
+    <div class="container">
+      <header class="header">
+        <h1 class="title">Physics & Chemistry Simulator</h1>
+        <p class="subtitle">Interactive visualization tools for learning and exploration</p>
+      </header>
+
+      <main class="main-content">
+        <div class="cards">
+          <a href="/circuit.html" class="card">
+            <div class="card-icon">⚡</div>
+            <h2 class="card-title">Circuit Simulator</h2>
+            <p class="card-description">
+              Visualize and explore electrical circuits in 3D space. Build circuits with resistors, capacitors, and batteries.
+            </p>
+            <span class="card-status status-available">Available</span>
+          </a>
+
+          <a href="/lewis.html" class="card card-disabled">
+            <div class="card-icon">⚛️</div>
+            <h2 class="card-title">Lewis Structure Diagrammer</h2>
+            <p class="card-description">
+              Draw and simulate molecular Lewis structures. Visualize electron configurations and bonding.
+            </p>
+            <span class="card-status status-coming-soon">Coming Soon</span>
+          </a>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <p>Built with Three.js and Vite</p>
+      </footer>
     </div>
-    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

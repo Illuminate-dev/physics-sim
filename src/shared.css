@@ -1,0 +1,37 @@
+/* CSS Custom Properties for easy theming - Shared across all pages */
+:root {
+  --primary-bg: #1a1d23;
+  --secondary-bg: #242a32;
+  --tertiary-bg: #2d3640;
+  --accent-cyan: #00d4ff;
+  --accent-blue: #4a9eff;
+  --accent-green: #00ff88;
+  --accent-red: #ff4757;
+  --text-primary: #ffffff;
+  --text-secondary: #b8c5d1;
+  --text-muted: #7a8a99;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Modern scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+}

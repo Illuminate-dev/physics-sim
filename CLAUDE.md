@@ -30,20 +30,32 @@ npm run dev
 
 ## Architecture Overview
 
-This is a 3D physics circuit simulator built with Three.js and Vite. The application visualizes electrical circuits in 3D space with interactive components.
+This is a multi-page application featuring physics and chemistry simulation tools built with Three.js and Vite.
 
-### Core Structure
+### Project Structure
 
-In **src/**:
+The application is organized as a multi-page website:
 
-- **main.js**: Application entry point, sets up Three.js scene, camera, renderer, and controls. Creates the test circuit and handles UI interactions.
+**Root HTML pages:**
+- **index.html**: Home page with navigation to all simulation tools
+- **circuit.html**: 3D circuit simulator page
+- **lewis.html**: Lewis structure diagrammer placeholder (coming soon)
+
+**src/ directory:**
+
+- **main.js**: Circuit simulator entry point, sets up Three.js scene, camera, renderer, and controls. Creates the test circuit and handles UI interactions.
 - **Circuit.js**: Contains all circuit-related classes:
   - `Circuit`: Main circuit container that manages nodes and rendering
   - `Node`: Represents connection points in the circuit
   - `Component` (base class): Abstract component with label rendering and animation
   - `Resistor`, `Capacitor`, `Battery`: Specific electrical components with unique visual representations
 - **util.js**: Utility functions, primarily `newLine()` for creating Three.js line objects
-- **style.css**: Modern dark theme with professional UI styling
+- **shared.css**: Shared CSS variables and common styles across all pages
+- **home.css**: Styles for the home page with card-based navigation
+- **style.css**: Circuit simulator specific styles with modern dark theme
+
+**Build configuration:**
+- **vite.config.js**: Multi-page application configuration with separate entry points for each page
 
 ### Key Technical Details
 
